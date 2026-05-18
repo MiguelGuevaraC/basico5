@@ -1,0 +1,52 @@
+services:
+  - type: web
+    name: mvc-productos-basico5
+    runtime: docker
+    repo: https://github.com/your-username/your-repo # Update to your repo
+    plan: starter
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        fromService:
+          type: web
+          name: mvc-productos-basico5
+          property: host
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: mvc-productos-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: mvc-productos-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: mvc-productos-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: mvc-productos-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: mvc-productos-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_TTL_MINUTES
+        value: 120
+      - key: CORS_ALLOWED_ORIGINS
+        value: "*"
+
+databases:
+  - name: mvc-productos-db
+    databaseName: mvc_productos
+    user: mvc_productos_user
+    plan: starter

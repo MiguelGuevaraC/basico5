@@ -1,0 +1,40 @@
+
+//Instalar composer
+
+//crear un proyecto de laravel
+composer create-project laravel/laravel basico3
+
+cd basico3
+
+
+php artisan make:controller UserController
+php artisan make:model User
+
+
+php artisan make:model User -m //crea el modelo y la migracion
+php artisan make:model User -c //crea el modelo y el controlador
+php artisan make:model User -cm //crea el modelo, controlador y migracion
+
+
+php artisan make:seeder NombreSeeder //crea un seeder para poblar la base de datos, data mockeada a la BD
+php artisan make:middleware NombreMiddleware //crea un middleware para filtrar las peticiones, por ejemplo, para verificar si el usuario esta autenticado o no
+
+
+
+php artisan cache:clear //limpiar cache
+php artisan route:clear //limpiar cache de rutas
+php artisan config:clear //limpiar cache de configuracion
+php artisan view:clear //limpiar cache de vistas
+
+
+php artisan migrate //ejecutar migraciones
+php artisan migrate:rollback //deshacer la ultima migracion
+php artisan migrate:refresh //deshacer todas las migraciones y ejecutarlas nuevamente
+php artisan migrate:fresh //eliminar todas las tablas y ejecutar todas las migraciones nuevamente
+
+php artisan db:seed //ejecutar los seeders para poblar la base de datos
+
+
+
+composer install //instalar librerias del .json
+composer update //actualizar la version librerias del .json
