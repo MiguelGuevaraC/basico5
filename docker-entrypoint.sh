@@ -4,12 +4,24 @@ set -e
 
 echo "Starting Laravel application..."
 
-# Clear all Laravel caches first
+# Use array cache for initial setup (no database needed)
+export CACHE_DRIVER=array
+export SESSION_DRIVER=array
+
+# Clear Laravel caches (using array cache)
 echo "Clearing Laravel caches..."
 php artisan config:clear --no-ansi
 php artisan cache:clear --no-ansi
 php artisan route:clear --no-ansi
 php artisan view:clear --no-ansi
+
+# Now unset the temp cache settings
+unset CACHE_DRIVER
+unset SESSION_DRIVER
+
+# Wait a little bit to avoid SSL issues
+echo "Waiting for database to stabilize..."
+sleep 2
 
 # Run Laravel setup commands
 echo "Running Laravel setup commands..."
