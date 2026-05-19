@@ -54,6 +54,9 @@ EXPOSE 80
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+# Ensure storage/api-docs directory exists
+RUN mkdir -p /var/www/html/storage/api-docs
+
 # Set entrypoint
 ENTRYPOINT ["docker-entrypoint.sh"]
 

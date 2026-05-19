@@ -2,34 +2,37 @@
 
 set -e
 
-# Wait for database
-echo "Waiting for database..."
-while ! php -r "try { new PDO('pgsql:host=${DB_HOST};port=${DB_PORT};dbname=${DB_DATABASE}', '${DB_USERNAME}', '${DB_PASSWORD}'); echo 'Connected to database'; } catch (Exception \$e) { sleep(1); }"; do
-    sleep 1
-done
+echo "Starting Laravel application..."
+
+# Wait for database if DB_HOST is set
+if [ -n "$DB_HOST" ]; then
+    echo "Waiting for database at ${DB_HOST}:${DB_PORT}..."
+    while ! php -r "try {
+        \$pdo = new PDO('pgsql:host=${DB_HOST};port=${DB_PORT};dbname=${DB_DATABASE}', '${DB_USERNAME}', '${DB_PASSWORD}');
+        \$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        echo 'Database connected!';
+    } catch (Exception \$e) {
+        sleep(1);
+    }" 2>/dev/null; do
+        sleep 1
+    done
+fi
 
 # Run Laravel commands
-echo "Running Laravel commands..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-php artisan migrate --force
+echo "Running Laravel setup commands..."
+php artisan config:cache --no-ansi
+php artisan route:cache --no-ansi
+php artisan view:cache --no-ansi
+php artisan migrate --force --no-ansi
 
 # Generate OpenAPI documentation
 echo "Generating OpenAPI documentation..."
-php -r "
-define('L5_SWAGGER_CONST_HOST', getenv('APP_URL'));
-require __DIR__.'/vendor/autoload.php';
-use OpenApi\Generator;
-\$generator = new Generator();
-\$openapi = \$generator->generate([__DIR__.'/app/Swagger', __DIR__.'/app/Http/Controllers/Api']);
-file_put_contents(__DIR__.'/storage/api-docs/api-docs.json', \$openapi->toJson());
-echo 'Documentation generated!';
-"
+php artisan openapi:generate --no-ansi
 
-# Set permissions again
+# Ensure permissions are correct
+echo "Setting permissions..."
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Execute the command
+echo "Starting Apache server..."
 exec "$@"
