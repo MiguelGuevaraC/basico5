@@ -18,21 +18,21 @@ services:
           property: host
       - key: DB_CONNECTION
         value: pgsql
-      - key: DATABASE_URL
-        fromDatabase:
-          name: mvc-productos-db
-          property: connectionString
+      - key: DB_HOST
+        value: dpg-d85pll3bc2fs73f24vng-a.oregon-postgres.render.com
+      - key: DB_PORT
+        value: 5432
+      - key: DB_DATABASE
+        value: basico5
+      - key: DB_USERNAME
+        value: root
+      - key: DB_PASSWORD
+        value: enThbbnCah4DFliYI7lyCr9NpybSk27j
+      - key: DB_SSLMODE
+        value: prefer
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_TTL_MINUTES
         value: 120
       - key: CORS_ALLOWED_ORIGINS
         value: "*"
-      - key: DB_SSLMODE
-        value: "prefer"
-
-databases:
-  - name: mvc-productos-db
-    databaseName: mvc_productos
-    user: mvc_productos_user
-    plan: starter
