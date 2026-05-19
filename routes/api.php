@@ -11,7 +11,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthApiController::class, 'login'])->name('api.auth.login');
 });
 
-Route::prefix('v1')->middleware('auth')->group(function () {
+Route::prefix('v1')->middleware('jwt.auth')->group(function () {
     Route::apiResource('categorias', CategoriaApiController::class)->names('api.v1.categorias');
     Route::apiResource('marcas', MarcaApiController::class)->names('api.v1.marcas');
     Route::apiResource('productos', ProductoApiController::class)->names('api.v1.productos');
