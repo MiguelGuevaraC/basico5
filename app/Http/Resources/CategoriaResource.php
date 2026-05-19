@@ -11,9 +11,7 @@ final class CategoriaResource extends JsonResource
     {
         return [
             'id' => $this->resource->id,
-            'nombre' => $this->resource->nombre,
-            'created_at' => $this->resource->created_at,
-            'updated_at' => $this->resource->updated_at,
+            'nombre' => $this->resource->nombre
         ];
     }
 }
