@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     libpq-dev
 
-# Clear cache
+# Clear apt cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
@@ -28,7 +28,7 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer.lock and composer.json
+# Copy composer files first for better caching
 COPY composer.lock composer.json /var/www/html/
 
 # Install composer
@@ -37,29 +37,28 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Install project dependencies
 RUN composer install --no-ansi --no-dev --no-interaction --no-scripts --prefer-dist
 
-# Copy existing application directory contents
+# Copy application code
 COPY . /var/www/html
 
-# Create storage directories
-RUN mkdir -p /var/www/html/storage/logs /var/www/html/storage/framework/sessions /var/www/html/storage/framework/views /var/www/html/storage/framework/cache
+# Create all necessary storage directories
+RUN mkdir -p \
+    /var/www/html/storage/logs \
+    /var/www/html/storage/framework/sessions \
+    /var/www/html/storage/framework/views \
+    /var/www/html/storage/framework/cache \
+    /var/www/html/storage/api-docs
 
-# Set permissions
+# Set correct permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
-
-# Expose port 80
-EXPOSE 80
 
 # Copy startup script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Ensure storage/api-docs directory exists
-RUN mkdir -p /var/www/html/storage/api-docs
+# Expose port
+EXPOSE 80
 
-# Set entrypoint
+# Set entrypoint and command
 ENTRYPOINT ["docker-entrypoint.sh"]
-
-# Start Apache
 CMD ["apache2-foreground"]
-
